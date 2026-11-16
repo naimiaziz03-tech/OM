@@ -134,6 +134,7 @@ function hourOp(x,after,src,hh,mm){const rp=rprOf(x,src),te=x.indexOf('</w:tbl>'
  const r=t=>`<w:r>${rp}<w:t xml:space="preserve">${t}</w:t></w:r>`;return x.slice(0,e1)+r(hh)+x.slice(e1,e2)+r(mm)+x.slice(e2)}
 function prep(xml){XML=xml;T0=[];XML.replace(RE,(m,t)=>{T0.push(dec(t));return m});FIELDS.forEach(f=>DEF[f.id]=f.get(T0));
  DEFAG=AGN.map(([g,m])=>({n:J(T0,g).replace(/\xa0/g,' ').match(/^\s*:?\s*([\s\S]*?)\s*$/)[1],m:T0[m].replace(/\D/g,'')}));
+ DEFAG.forEach(a=>{if(String(a.n||'').trim().toUpperCase()==='BENSAID')a.n='Bensaid Nour El Hak'});
  const p=a=>{const m=J(T0,a).match(/(\d\d)\/(\d\d)\/(\d{4})/);return m?`${m[3]}-${m[2]}-${m[1]}`:''};
  DEFLIST=[{iso:p([291,292]),de:norm(T0[293].replace(/\D/g,'')),a:norm(J(T0,[294,295,296]).replace(/\D/g,'')),t:(T0[297]+T0[298]).replace(/\xa0/g,' ').trim()},
   {iso:p([299]),de:'',a:'',t:[T0[300],T0[302],T0[304],T0[305]+T0[306]].map(s=>s.trim()).join('\n').trim()}]}
@@ -277,7 +278,7 @@ function mk(f,par){const l=document.createElement('label');l.textContent=f.label
  par.appendChild(i);if(f.sug)suggest(f,i,par)}
 function sortAgents(){ST.ag.sort((a,b)=>{const x=parseInt(String(a.m||'').replace(/\D/g,''),10),y=parseInt(String(b.m||'').replace(/\D/g,''),10);if(Number.isFinite(x)&&Number.isFinite(y))return x-y;if(Number.isFinite(x))return -1;if(Number.isFinite(y))return 1;return String(a.n||'').localeCompare(String(b.n||''),'fr')})}
 function renderAg(){sortAgents();const b=$('ag');b.innerHTML='';
- const builtInNames=new Set(['BENSAID NOUR EL HAK','EL YAAGOUBI RACHID','JAGHMOUM JAOUAD','HAKKI OMAR','MORHLI MOUAD','NAIMI AZIZ']);
+ const builtInNames=new Set(['BENSAID','BENSAID NOUR EL HAK','EL YAAGOUBI RACHID','JAGHMOUM JAOUAD','HAKKI OMAR','MORHLI MOUAD','NAIMI AZIZ']);
  ST.ag.forEach((a,k)=>{const r=document.createElement('div');r.className='ag';
   r.innerHTML='<label class="on"><input type="checkbox"></label><textarea class="nm" rows="1" dir="auto" placeholder="الاسم"></textarea><input class="ml" inputmode="numeric" placeholder="Mle"><button type="button" class="del-agent" aria-label="حذف العون" title="حذف العون">×</button>';
   const nm=r.querySelector('.nm'),ml=r.querySelector('.ml'),cb=r.querySelector('input[type=checkbox]'),del=r.querySelector('.del-agent');
@@ -309,6 +310,8 @@ function render(){const box=$('f');box.innerHTML='';
 async function init(){let z;try{z=await JSZip.loadAsync(B64,{base64:true});prep(await z.file('word/document.xml').async('string'))}catch(e){say('تعذر تحميل مكتبة الملفات. تحقق من الاتصال.');return}
  const sv=load();FIELDS.forEach(f=>ST[f.id]=sv[f.id]!==undefined?sv[f.id]:(f.hid?DEF[f.id]:''));
  ST.ag=Array.isArray(sv.ag)&&sv.ag.length?sv.ag:DEFAG.map(a=>({...a,on:false}));
+ // Rename the built-in agent in saved data too, without creating a duplicate.
+ ST.ag.forEach(a=>{if(String(a.n||'').trim().toUpperCase()==='BENSAID')a.n='Bensaid Nour El Hak'});
  // MORHLI MOUAD is an ordinary agent: editable name/matricule and controlled by the same activation checkbox.
  // Migrate older saved data where this entry was incorrectly marked fixed and always active.
  ST.ag.forEach(a=>{if(String(a.n||'').trim().toUpperCase()==='MORHLI MOUAD'){
