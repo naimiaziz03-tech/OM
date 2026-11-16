@@ -283,8 +283,8 @@ function renderAg(){sortAgents();const b=$('ag');b.innerHTML='';
   r.innerHTML='<label class="on"><input type="checkbox"></label><textarea class="nm" rows="1" dir="auto" placeholder="الاسم"></textarea><input class="ml" inputmode="numeric" placeholder="Mle"><button type="button" class="del-agent" aria-label="حذف العون" title="حذف العون">×</button>';
   const nm=r.querySelector('.nm'),ml=r.querySelector('.ml'),cb=r.querySelector('input[type=checkbox]'),del=r.querySelector('.del-agent');
   nm.value=a.n;ml.value=a.m;cb.checked=!!a.on;
-  const isBuiltIn= builtInNames.has(String(a.n||'').trim().toUpperCase());del.hidden=isBuiltIn;
-  nm.oninput=()=>{nm.value=nm.value.replace(/\n/g,' ');a.n=nm.value;grow(nm);del.hidden=builtInNames.has(String(a.n||'').trim().toUpperCase());save()};nm.onkeydown=e=>{if(e.key=='Enter')e.preventDefault()};
+  const isBuiltIn= !a.custom;del.hidden=isBuiltIn;
+  nm.oninput=()=>{nm.value=nm.value.replace(/\n/g,' ');a.n=nm.value;grow(nm);del.hidden=!a.custom;save()};nm.onkeydown=e=>{if(e.key=='Enter')e.preventDefault()};
   ml.oninput=()=>{ml.value=ml.value.replace(/\D/g,'');a.m=ml.value;save()};ml.onblur=()=>{sortAgents();renderAg()};cb.onchange=()=>{a.on=cb.checked;save()};
   del.onclick=()=>{if(builtInNames.has(String(a.n||'').trim().toUpperCase()))return;if(!confirm('واش متأكد بغيتي تحذف هاد العون؟'))return;ST.ag=ST.ag.filter(item=>item!==a);save();renderAg()};
   b.appendChild(r)});
@@ -312,6 +312,10 @@ async function init(){let z;try{z=await JSZip.loadAsync(B64,{base64:true});prep(
  ST.ag=Array.isArray(sv.ag)&&sv.ag.length?sv.ag:DEFAG.map(a=>({...a,on:false}));
  // Rename the built-in agent in saved data too, without creating a duplicate.
  ST.ag.forEach(a=>{if(String(a.n||'').trim().toUpperCase()==='BENSAID')a.n='Bensaid Nour El Hak'});
+ // Only agents explicitly added with the '+ إضافة عون' button get an X delete control.
+ const builtInMatricules=new Set(['79246','76318','82697','82021','83677','83684']);
+ const builtInNamesForDelete=new Set(['BENSAID','BENSAID NOUR EL HAK','EL YAAGOUBI RACHID','JAGHMOUM JAOUAD','HAKKI OMAR','MORHLI MOUAD','NAIMI AZIZ']);
+ ST.ag.forEach(a=>{const n=String(a.n||'').trim().toUpperCase(),m=String(a.m||'').replace(/\D/g,'');if(builtInMatricules.has(m)||builtInNamesForDelete.has(n))a.custom=false;else if(a.custom!==true)a.custom=true;});
  // MORHLI MOUAD is an ordinary agent: editable name/matricule and controlled by the same activation checkbox.
  // Migrate older saved data where this entry was incorrectly marked fixed and always active.
  ST.ag.forEach(a=>{if(String(a.n||'').trim().toUpperCase()==='MORHLI MOUAD'){
