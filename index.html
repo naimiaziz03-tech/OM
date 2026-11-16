@@ -277,7 +277,7 @@ function mk(f,par){const l=document.createElement('label');l.textContent=f.label
  par.appendChild(i);if(f.sug)suggest(f,i,par)}
 function sortAgents(){ST.ag.sort((a,b)=>{const x=parseInt(String(a.m||'').replace(/\D/g,''),10),y=parseInt(String(b.m||'').replace(/\D/g,''),10);if(Number.isFinite(x)&&Number.isFinite(y))return x-y;if(Number.isFinite(x))return -1;if(Number.isFinite(y))return 1;return String(a.n||'').localeCompare(String(b.n||''),'fr')})}
 function renderAg(){sortAgents();const b=$('ag');b.innerHTML='';
- const builtInNames=new Set(['BENSAID','BENSAID NOUR EL HAK','EL YAAGOUBI RACHID','JAGHMOUM JAOUAD','HAKKI OMAR','MORHLI MOUAD','NAIMI AZIZ']);
+ const builtInNames=new Set(['BENSAID NOUR EL HAK','EL YAAGOUBI RACHID','JAGHMOUM JAOUAD','HAKKI OMAR','MORHLI MOUAD','NAIMI AZIZ']);
  ST.ag.forEach((a,k)=>{const r=document.createElement('div');r.className='ag';
   r.innerHTML='<label class="on"><input type="checkbox"></label><textarea class="nm" rows="1" dir="auto" placeholder="الاسم"></textarea><input class="ml" inputmode="numeric" placeholder="Mle"><button type="button" class="del-agent" aria-label="حذف العون" title="حذف العون">×</button>';
   const nm=r.querySelector('.nm'),ml=r.querySelector('.ml'),cb=r.querySelector('input[type=checkbox]'),del=r.querySelector('.del-agent');
